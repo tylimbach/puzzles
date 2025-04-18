@@ -1,4 +1,4 @@
-use std::{cmp::Reverse, collections::BinaryHeap, io::{self, Write}};
+use std::{cmp::{Ordering, Reverse}, collections::BinaryHeap, io::{self, Write}};
 
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct ListNode {
@@ -16,6 +16,18 @@ impl ListNode {
     }
 }
 
+impl Ord for ListNode {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.val.cmp(&other.val)
+    }
+}
+
+impl PartialOrd for ListNode {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
 struct MinHeap<T: Ord> {
     inner: BinaryHeap<Reverse<T>>,
 }
@@ -23,16 +35,55 @@ struct MinHeap<T: Ord> {
 impl<T: Ord> MinHeap<T> {
     #[inline]
     fn new() -> Self {
-         
+        MinHeap::<T> {
+            inner: BinaryHeap::new(),
+        }
+    }
+
+    #[inline]
+    fn push(&mut self, value: T) {
+        self.inner.push(Reverse(value));
+    }
+
+    #[inline]
+    fn pop(&mut self) -> Option<T> {
+        self.inner.pop().map(|rev| rev.0)
+    }
+
+    #[inline]
+    fn peek(&mut self) -> Option<&T> {
+        self.inner.peek().map(|rev| &rev.0)
+    }
+
+    #[inline]
+    fn len(&self) -> usize {
+        self.inner.len()
+    }
+
+    #[inline]
+    fn is_empty(&self) -> bool {
+        self.inner.is_empty()
     }
 }
 
-
-
 fn merge_k_lists(lists: Vec<Option<Box<ListNode>>>) -> Option<Box<ListNode>> {
-    
+    let mut pq = MinHeap::<Box<ListNode>>::new();
+    for l in lists.into_iter().flatten() {
+        pq.push(l);
+    }
 
-    Some(Box::new(ListNode::new(1))) 
+    let mut dummy = Box::new(ListNode::new(0));
+    let mut tail = &mut dummy;
+
+    while let Some(mut node) = pq.pop() {
+        if let Some(next) = node.next.take() {
+            pq.push(next);
+        }
+        tail.next = Some(node);
+        tail = tail.next.as_mut().unwrap();
+    }
+
+    dummy.next
 }
 
 fn main() -> io::Result<()> {
