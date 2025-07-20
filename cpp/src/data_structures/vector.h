@@ -1,7 +1,9 @@
 #pragma once
 
+#include <algorithm>
 #include <cstddef>
 #include <cstring>
+#include <limits>
 #include <memory>
 #include <ranges>
 #include <type_traits>
@@ -161,7 +163,15 @@ template <typename... Args>
 void vector<T, Allocator>::push_back(Args&&... args) 
 {
     if (size_ == capacity_) {
-        reserve(capacity_ * 2);
+		if (size_ == std::numeric_limits<size_t>::max()) {
+			throw std::logic_error("vector is already at max size_t capacity");
+		}
+
+		if (std::numeric_limits<size_t>::max() / 2 < capacity_) {
+			reserve(std::numeric_limits<size_t>::max());
+		} else {
+			reserve(capacity_ * 2);
+		}
     }
 
     std::allocator_traits<Allocator>::construct(alloc_, buf_ + size_, std::forward<Args>(args)...);
