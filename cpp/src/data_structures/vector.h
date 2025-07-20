@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <cstring>
 #include <memory>
+#include <ranges>
 #include <type_traits>
 #include <utility>
 #include <stdexcept>
@@ -15,10 +16,10 @@ public:
     vector(size_t initial_capacity = 4, const Allocator& alloc = Allocator());
     ~vector();
 
-    vector(const vector& other) = default; 
-    vector(vector&& other) noexcept = default;
-    vector& operator=(const vector& other) = default;
-    vector& operator=(vector&& other) noexcept = default;
+    vector(const vector& other); 
+    vector(vector&& other) noexcept;
+    vector& operator=(const vector& other);
+    vector& operator=(vector&& other) noexcept;
 
     void clear();
     template <typename... Args>
@@ -50,16 +51,108 @@ vector<T, Allocator>::vector(size_t initial_capacity, const Allocator& alloc)
 }
 
 template<typename T, typename Allocator>
+vector<T, Allocator>::vector(const vector& other)
+	: size_(other.size_), capacity_(other.capacity_), alloc_(std::allocator_traits<Allocator>::select_on_container_copy_construction(other.alloc_)) {
+	buf_ = std::allocator_traits<Allocator>::allocate(alloc_, other.capacity_);
+	auto src = std::ranges::subrange(other.buf_, other.buf_ + other.size_);
+	auto dest = std::ranges::subrange(buf_, buf_ + other.size_);
+	std::ranges::uninitialized_copy(src, dest);
+}
+
+template<typename T, typename Allocator>
+vector<T, Allocator>& vector<T, Allocator>::operator=(const vector& other) {
+	if (this == &other) {
+		return *this;
+	}
+
+	clear();
+
+	if constexpr (std::allocator_traits<Allocator>::propagate_on_container_copy_assignment::value) {
+		alloc_ = other.alloc_;
+	}
+
+	if (capacity_ < other.size_) {
+		std::allocator_traits<Allocator>::deallocate(alloc_, buf_, capacity_);
+		capacity_ = other.size_; // assumption is we don't care to maintain extra space
+		buf_ = std::allocator_traits<Allocator>::allocate(alloc_, capacity_);
+	}
+
+	try {
+		auto src = std::ranges::subrange(other.buf_, other.buf_ + other.size_);
+		auto dest = std::ranges::subrange(buf_, buf_ + other.size_);
+		std::ranges::uninitialized_copy(src, dest);
+		size_ = other.size_;
+	} catch (std::exception) {
+		size_ = 0;
+		throw;
+	}
+
+	return *this;
+}
+
+template<typename T, typename Allocator>
+vector<T, Allocator>::vector(vector&& other) noexcept
+	: size_(other.size_), capacity_(other.capacity_), buf_(other.buf_), alloc_(std::move(other.alloc_)) {
+	other.capacity_ = 0;
+	other.size_ = 0;
+	other.buf_ = nullptr;
+}
+
+template<typename T, typename Allocator>
+vector<T, Allocator>& vector<T, Allocator>::operator=(vector&& other) noexcept {
+	if (this == &other) {
+		return *this;
+	}
+
+	if (buf_ != nullptr) {
+		clear();
+		std::allocator_traits<Allocator>::deallocate(alloc_, buf_, capacity_);
+	}
+
+	// c++ standards for allocator propogation
+    if constexpr (std::allocator_traits<Allocator>::propagate_on_container_move_assignment::value) {
+        alloc_ = std::move(other.alloc_);
+    } else if (alloc_ != other.alloc_) {
+		buf_ = std::allocator_traits<Allocator>::allocate(alloc_, other.size_);
+		auto src = std::ranges::subrange(other.buf_, other.buf_ + other.size_);
+		auto dest = std::ranges::subrange(buf_, buf_ + other.size_);
+
+		if constexpr (std::is_move_constructible_v<T>) {
+			std::ranges::uninitialized_move(src, dest);
+		} else {
+			std::ranges::uninitialized_copy(src, dest);
+		}
+
+		size_ = other.size_;
+		capacity_ = other.size_;
+	} else {
+		buf_ = other.buf_;
+		size_ = other.size_;
+		capacity_ = other.capacity_;
+	}
+
+	other.buf_ = nullptr;
+	other.size_ = 0;
+	other.capacity_ = 0;
+
+	return *this;
+}
+
+template<typename T, typename Allocator>
 vector<T, Allocator>::~vector()
 { 
-    clear();
-    std::allocator_traits<Allocator>::deallocate(alloc_, buf_, capacity_);
+	if (buf_ != nullptr) {
+		clear();
+		std::allocator_traits<Allocator>::deallocate(alloc_, buf_, capacity_);
+	}
 }
 
 template<typename T, typename Allocator>
 void vector<T, Allocator>::clear() 
 {
-    std::destroy(buf_, buf_ + size_);
+	if (buf_ != nullptr) {
+		std::destroy(buf_, buf_ + size_);
+	}
     size_ = 0;
 }
 
