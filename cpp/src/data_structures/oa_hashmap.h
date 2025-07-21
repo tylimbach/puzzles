@@ -2,6 +2,7 @@
 
 #include "vector.h"
 #include <concepts>
+
 namespace dev {
 
 template <typename K, typename V, typename Hash = std::hash<K>>
@@ -34,25 +35,34 @@ public:
 	template <typename... KArgs, typename... VArgs>
 	bool try_emplace(KArgs&&... k_args, VArgs&&... v_args);
 
-	size_t size();
-	bool is_empty();
+	size_t size() const;
+	size_t capacity() const;
+	bool is_empty() const;
 
 	V& operator[](const K& key);
 
 private:
+	enum class State { EMPTY, OCCUPIED, DELETED };
 	struct Node {
-		Node(K key, V value) : key_(key), value_(value){};
+		Node() : state_(State::EMPTY) {};
 
 		K key_;
 		V value_;
-		// TODO: do we need special destructor?
+		State state_;
 	};
 
-	size_t get_hash_index();
+	size_t get_hash_index(const K& key) const;
+	size_t find_slot(const K& key) const;
+	void maybe_rehash();
+
+    static constexpr float DEFAULT_MAX_LOAD_FACTOR = 0.75f;
+    static constexpr size_t DEFAULT_INITIAL_CAPACITY = 16;
 
 	vector<Node> table_;
 	size_t size_;
 	size_t capacity_;
+	float max_load_factor_;
+	Hash hasher_;
 };
 
 

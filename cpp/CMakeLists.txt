@@ -9,7 +9,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 option(BUILD_TESTS "Build the tests" ON)
 
 # Include directories
-include_directories(include)
+find_package(Boost 1.88.0 REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
 
 # Add source directories
 add_subdirectory(src)
