@@ -1,5 +1,6 @@
 add_library(data_structures
-    vector.cpp
+	vector.cpp
+	oa_hashmap.cpp
 )
 
 target_include_directories(data_structures

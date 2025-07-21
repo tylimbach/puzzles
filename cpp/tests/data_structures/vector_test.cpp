@@ -64,11 +64,12 @@ TEST_F(VectorTest, Clear) {
 
 TEST_F(VectorTest, Reserve) {
     EXPECT_EQ(intVector.capacity(), 4);
-    
+
+	intVector.push_back(0);
     intVector.reserve(10);
     
     EXPECT_EQ(intVector.capacity(), 10);
-    EXPECT_EQ(intVector.size(), 0);
+    EXPECT_EQ(intVector.size(), 1);
 }
 
 TEST_F(VectorTest, StringVector) {
