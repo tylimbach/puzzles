@@ -1,8 +1,6 @@
-add_library(leetcode
-    43_multiply_strings.cpp
-)
+add_library(leetcode INTERFACE)
 
 target_include_directories(leetcode
-    PUBLIC
+	INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}
 )

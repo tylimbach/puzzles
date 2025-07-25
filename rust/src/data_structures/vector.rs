@@ -96,7 +96,13 @@ impl<T> Vector<T> {
 
 impl<T> Drop for Vector<T> {
     fn drop(&mut self) {
-        todo!()
+        let ptr = self.data.as_ptr();
+        unsafe {
+            for i in 0..self.size {
+                std::ptr::drop_in_place(ptr.add(i));
+            }
+            alloc::dealloc(ptr as *mut u8, Layout::array::<T>(self.capacity).expect("Vector Layout Overflow"));
+        }
     }
 }
 
@@ -104,31 +110,70 @@ impl<T> Index<usize> for Vector<T> {
     type Output = T;
 
     fn index(&self, index: usize) -> &Self::Output {
-        todo!()
+        if index > self.size {
+            panic!("Tried indexing vector out of bounds.");
+        }
+
+        unsafe { 
+            &*self.data.as_ptr().add(index)
+        }
     }
 }
 
 impl<T> IndexMut<usize> for Vector<T> {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        todo!()
+        if index > self.size {
+            panic!("Tried indexing vector out of bounds.")
+        }
+
+        unsafe {
+            &mut *self.data.as_ptr().add(index)
+        }
     }
 }
 
 impl<T: PartialEq> PartialEq for Vector<T> {
     fn eq(&self, other: &Self) -> bool {
-        todo!();
+        if self.size == other.size {
+            unsafe {
+                let self_slice = std::slice::from_raw_parts(self.data.as_ptr(), self.size);
+                let other_slice = std::slice::from_raw_parts(other.data.as_ptr(), other.size); 
+                self_slice.eq(other_slice)
+            }
+        } else {
+            false
+        }
     }
 }
 
 impl<T: fmt::Debug> fmt::Debug for Vector<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        todo!();
+        let slice = unsafe {
+            std::slice::from_raw_parts(self.data.as_ptr(), self.size)
+        };
+
+        f.debug_list().entries(slice.iter()).finish()
     }
 }
 
 impl<T: Clone> Clone for Vector<T> {
     fn clone(&self) -> Self {
-        todo!();
+        let new_layout = Layout::array::<T>(self.size).expect("Vector layout overflow");
+        let new_ptr = unsafe { alloc::alloc(new_layout) } as *mut T;
+        let new_data = NonNull::new(new_ptr).unwrap_or_else(|| alloc::handle_alloc_error(new_layout));
+
+        for i in 0..self.size {
+            unsafe {
+                std::ptr::write(new_data.as_ptr().add(i), (*self.data.as_ptr().add(i)).clone()) 
+            }
+        }
+
+        Vector {
+            data: new_data,
+            size: self.size,
+            capacity: self.size,
+            marker: PhantomData,
+        }
     }
 }
 
