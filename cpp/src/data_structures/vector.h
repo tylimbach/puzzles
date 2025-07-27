@@ -31,7 +31,7 @@ public:
     T& at(size_t index);
     const T& at(size_t index) const;
 
-    [[nodiscard]] bool is_full() const;
+    [[nodiscard]] bool is_full() const { return size_ == capacity_; }
     [[nodiscard]] size_t size() const { return size_; }
     [[nodiscard]] size_t capacity() const { return capacity_; }
     
@@ -228,12 +228,6 @@ const T& vector<T, Allocator>::at(size_t index) const {
         throw std::out_of_range("Index out of range");
     }
     return buf_[index];
-}
-
-template<typename T, typename Allocator>
-bool vector<T, Allocator>::is_full() const 
-{
-    return size_ == capacity_;
 }
 
 } // namespace dev

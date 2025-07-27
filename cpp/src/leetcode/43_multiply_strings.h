@@ -26,7 +26,7 @@ Both num1 and num2 do not contain any leading zero, except the number 0 itself.
 
 namespace leetcode {
 
-std::string multiply(std::string num1, std::string num2) {
+inline std::string multiply(std::string num1, std::string num2) {
     // Handle edge cases
     if (num1 == "0" || num2 == "0") return "0";
     

@@ -1,6 +1,5 @@
 #pragma once
 #include <cassert>
-#include <string>
 #include <vector>
 
 /*
@@ -40,7 +39,7 @@ namespace leetcode {
 	3 ptr - n * n
 */
 
-int threeSumClosest(std::vector<int>& nums, int target) {
+inline int threeSumClosest(std::vector<int>& nums, int target) {
 	assert(nums.size() >= 3);
 
 	int closest = nums[0] + nums[1] + nums.back();

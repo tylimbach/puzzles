@@ -11,6 +11,7 @@ FetchContent_MakeAvailable(googletest)
 
 add_subdirectory(data_structures)
 add_subdirectory(leetcode)
+add_subdirectory(io)
 
 # Configure all tests to have standard main function
 add_library(test_main STATIC test_main.cpp)
