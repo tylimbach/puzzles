@@ -18,8 +18,3 @@ target_link_libraries(data_structures
 	INTERFACE
         ${Boost_LIBRARIES}
 )
-
-target_compile_features(data_structures
-	INTERFACE
-        cxx_std_23
-)

@@ -1,6 +1,8 @@
 #pragma once
+#include <algorithm>
 #include <cassert>
 #include <vector>
+#include <cmath>
 
 /*
 https://leetcode.com/problems/3sum-closest/description/
@@ -36,28 +38,30 @@ namespace leetcode {
 
 /*
 	brute force - check all combos of 3 values (n * (n - 1) * (n - 2))
-	3 ptr - n * n
+	3 ptr - n * n + sort (nlogn)
 */
 
 inline int threeSumClosest(std::vector<int>& nums, int target) {
 	assert(nums.size() >= 3);
 
-	int closest = nums[0] + nums[1] + nums.back();
+	std::sort(nums.begin(), nums.end());
+
+	int closest = nums[0] + nums[1] + nums[2];
 	for (int m = 1; m < nums.size() - 1; m++) {
-		int l = 0, r = nums.size() - 1;
-		while (l != m && r != m) {
+		int l = 0;
+		int r = nums.size() - 1;
+		while (l < m && r > m) {
 			int sum3 = nums[l] + nums[m] + nums[r];
 
 			if (sum3 == target) {
 				return sum3;
 			}
 
-			int diff = target - sum3;
-			if (abs(diff) < abs(target - closest)) {
+			if (std::abs(target - sum3) < std::abs(target - closest)) {
 				closest = sum3;	
 			} 
 
-			if (diff <= 0) {
+			if (sum3 < target) {
 				l++;		
 			} else {
 				r--;

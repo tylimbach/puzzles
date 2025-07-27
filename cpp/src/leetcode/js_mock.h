@@ -47,12 +47,12 @@ struct ConversionNode {
 	double ratio;	
 };
 
-std::unordered_map<std::string, std::vector<ConversionNode>> build_conversion_graph(const std::vector<Fact>& facts) {
+inline std::unordered_map<std::string, std::vector<ConversionNode>> build_conversion_graph(const std::vector<Fact>& facts) {
 	std::unordered_map<std::string, std::vector<ConversionNode>> conversion_graph{};
 
 	for (Fact fact : facts) {
-		auto [it, inserted] = conversion_graph.try_emplace(fact.in_unit, ConversionNode { fact.out_unit, fact.ratio });
-		auto [it_rev, inserted_rev] = conversion_graph.try_emplace(fact.out_unit, ConversionNode { fact.in_unit, 1 / fact.ratio });
+		auto [it, inserted] = conversion_graph.try_emplace(fact.in_unit, std::vector<ConversionNode> { { fact.out_unit, fact.ratio } });
+		auto [it_rev, inserted_rev] = conversion_graph.try_emplace(fact.out_unit, std::vector<ConversionNode> { { fact.in_unit, 1 / fact.ratio } });
 		if (!inserted) {
 			it->second.push_back({ fact.out_unit, fact.ratio });
 		}
@@ -64,7 +64,7 @@ std::unordered_map<std::string, std::vector<ConversionNode>> build_conversion_gr
 	return conversion_graph;
 }
 
-std::optional<double> dfs(
+inline std::optional<double> dfs(
 	const std::unordered_map<std::string, std::vector<ConversionNode>>& conversion_graph, 
 	std::set<std::string>& seen_units, 
 	double value,
@@ -91,13 +91,13 @@ std::optional<double> dfs(
 	return {};
 }
 
-std::vector<std::optional<double>> query(const std::vector<Fact>& facts, const std::vector<Query>& queries) {
+inline std::vector<std::optional<double>> query(const std::vector<Fact>& facts, const std::vector<Query>& queries) {
 	auto conversion_map = build_conversion_graph(facts);
 	std::vector<std::optional<double>> results{};
 	results.reserve(queries.size());
 
-	std::set<std::string> seen_units {};
 	for (Query query : queries)	 {
+		std::set<std::string> seen_units {};
 		for (auto& [key, value] : conversion_map) {
 			if (!seen_units.contains(key)) {
 				auto option = dfs(conversion_map, seen_units, query.magnitude, query.in_unit, query.out_unit);
@@ -113,7 +113,7 @@ std::vector<std::optional<double>> query(const std::vector<Fact>& facts, const s
 	return results;
 }
 
-std::unordered_map<Conversion, double, Conversion::Hash> conversion_graph{};
+inline std::unordered_map<Conversion, double, Conversion::Hash> conversion_graph{};
 };
 };
 
