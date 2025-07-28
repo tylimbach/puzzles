@@ -1,8 +1,6 @@
-cmake_minimum_required(VERSION 3.14)
+add_library(util INTERFACE)
 
-add_library(leetcode INTERFACE)
-
-target_include_directories(leetcode
+target_include_directories(util
     INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
         $<INSTALL_INTERFACE:include>
