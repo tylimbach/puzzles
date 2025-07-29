@@ -29,38 +29,6 @@
 # Only one valid answer exists.
 
 
-'''
-[9, 2, 11, 11, 7]
-
-[9+2, 9+11, 9+11, 9+7]
-[, 2+11, 2+11, 2+7]
-[, , 
-
-for (int i = 0; i < len(nums); i++)
-    for (int j = i + 1; j < len(nums); j++)
-        if (i == j || j < i) continue;
-        
-        sum = nums[i] + nums[j]
-        if (sum == target) return [i, j]
-
-
-struct Node:
-    int value
-    Node next
-
-array
-list/vector
-linked list
-set - bag of values
-hash map or dictionary - Key -> Value
-
-stack (lifo)
-queue (fifo)
-heap (min / max)
-
-graph
-'''
-
 def solve_2sum_inefficient(nums: list[int], target: int):
     for i in range(len(nums)):
         for j in range(i + 1, len(nums)):
@@ -91,3 +59,5 @@ def test():
 
     solve_2sum_inefficient(nums, 21)
     solve_2sum_efficient(nums, 21)
+
+

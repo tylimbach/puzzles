@@ -11,7 +11,9 @@ pub struct Vector<T> {
 impl<T> Vector<T> {
     pub fn with_capacity(capacity: usize) -> Self {
         let layout = Layout::array::<T>(capacity).expect("Vector layout overflow");
-        let ptr = unsafe {alloc(layout)} as *mut T;
+        let ptr = unsafe { 
+            alloc(layout) 
+        } as *mut T;
         let data = NonNull::new(ptr).unwrap_or_else(|| alloc::handle_alloc_error(layout));
 
         Vector { data, capacity, size: 0, marker: PhantomData, }
