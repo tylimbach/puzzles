@@ -7,6 +7,4 @@ target_link_libraries(io_test
         gmock
 )
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/res DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
 add_test(NAME IOTest COMMAND io_test)

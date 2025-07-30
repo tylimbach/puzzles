@@ -7,8 +7,6 @@ namespace dev {
 
 enum class LogLevel { DEBUG, INFO, WARN, ERROR };
 
-#define LOGINFO
-
 #ifdef LOGINFO
 	constexpr LogLevel MIN_LOG_LEVEL = LogLevel::INFO;
 #else

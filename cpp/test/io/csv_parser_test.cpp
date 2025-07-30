@@ -17,7 +17,7 @@ struct LoMidHiCt {
 TEST(IOTest, Example1) {
 	std::cout << "cwd: " << std::filesystem::current_path() << std::endl;
 
-	std::ifstream file("res/csv_example_1.csv");
+	std::ifstream file("../../res/csv_example_1.csv");
     ASSERT_TRUE(file.is_open()) << "Failed to open CSV file";
 
 	dev::CsvParser<LoMidHiCt, double, double, double, int> parser(file);

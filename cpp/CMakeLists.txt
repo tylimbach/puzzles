@@ -6,18 +6,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS_JSON ON)
 
-# Options
 option(BUILD_TESTS "Build the tests" ON)
 
-# Include directories
 find_package(Boost 1.88.0 REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
-# Add source directories
 add_subdirectory(src)
+add_subdirectory(bench)
 
-# Add tests if enabled
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/res DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
 if(BUILD_TESTS)
     enable_testing()
-    add_subdirectory(tests)
+    add_subdirectory(test)
 endif()

@@ -1,19 +1,24 @@
 #!/bin/bash
-# Simple build script for the C++ practice project
 
-set -e  # Exit on error
+set -e
 
-# Create build directory if it doesn't exist
 mkdir -p build
 cd build
 
-# Configure with CMake
-cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+BUILD_TYPE="Debug"
 
-# Build
+for arg in "$@"; do
+    if [ "$arg" == "release" ]; then
+        BUILD_TYPE="Release"
+    elif [ "$arg" == "test" ]; then
+        RUN_TESTS=true
+    fi
+done
+
+cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+
 cmake --build . -j$(nproc)
 
-# Run tests if requested
-if [ "$1" == "test" ]; then
+if [ "$RUN_TESTS" == "true" ]; then
     ctest --verbose
 fi
