@@ -1,0 +1,16 @@
+name = "julia"
+uuid = "a74777e0-4ab8-4b8d-9922-0cade38e2b42"
+authors = ["tylimbach <tylimbach@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
+Clang = "40e3b903-d033-50b4-a0cc-940c62c95e31"
+Metal = "dde4c033-4e86-420c-a63e-0dd931031962"
+ObjectiveC = "e86c9b32-1129-44ac-8ea0-90d5bb39ded9"
+
+[compat]
+BenchmarkTools = "1.6.0"
+Clang = "0.18.3"
+Metal = "1.7.0"
+ObjectiveC = "3.4.2"
