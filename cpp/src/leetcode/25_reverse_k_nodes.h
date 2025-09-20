@@ -41,27 +41,28 @@ struct ListNode {
 	ListNode(int x, ListNode *next) : val(x), next(next) {}
 };
 
-inline std::tuple<ListNode*, ListNode*> reverseIfK(ListNode* head, int k) {
+inline std::tuple<ListNode*, ListNode*> reverseK(ListNode* head, int k, bool undo) {
 	ListNode* tail = head;
-	for (int i = 0; i < k; i++) {
+	for (int i = 0; i < k - 1; i++) {
 		if (tail->next == nullptr) {
-			// undo what we have sorted thus far
-			return reverseIfK(head, i);
+			return undo 
+				? std::tuple<ListNode*, ListNode*>{head, tail} 
+				: reverseK(head, k, true);
 		}
-		auto temp = tail->next->next;
+		auto prevHead = head;
 		head = tail->next;
-		head->next = tail;
-		tail->next = temp;
+		tail->next = tail->next->next;
+		head->next = prevHead;
 	}
 	
 	return {head, tail};
 }
 	
 inline ListNode* reverseKGroup(ListNode* head, int k) {
-	auto [firstHead, tail] = reverseIfK(head, k);
+	auto [firstHead, tail] = reverseK(head, k, false);
 
 	while (tail->next != nullptr) {
-		auto [nextHead, nextTail] = reverseIfK(tail->next, k);
+		auto [nextHead, nextTail] = reverseK(tail->next, k, false);
 		tail->next = nextHead;
 		tail = nextTail;
 		head = nextHead; // technically unnecessary
