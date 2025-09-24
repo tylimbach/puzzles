@@ -1,4 +1,3 @@
-#pragma once
 /*
 The count-and-say sequence is a sequence of digit strings defined by the recursive formula:
 
@@ -50,10 +49,14 @@ Constraints:
 
 namespace leetcode {
 
-inline std::string count_and_say(int n) {
+inline std::string countAndSay(int n) {
 	std::string acc = "1";
+	std::string temp;
+
+	acc.reserve(64);
+	temp.reserve(64);
 	for (int i = 1; i < n; i++) {
-		std::string temp = "";
+		temp.clear();
 
 		char last = acc[0];
 		int repeats = 0;
@@ -72,8 +75,7 @@ inline std::string count_and_say(int n) {
 		auto encoding = std::format("{}{}", repeats, last);
 		temp = temp.append(encoding);
 
-		acc = temp;
-		std::cout << acc;
+		acc.swap(temp);
 	}
 
 	return acc;

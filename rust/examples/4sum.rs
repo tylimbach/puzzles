@@ -4,7 +4,7 @@ use std::collections::{HashMap, HashSet};
 // time complexity: n^2
 // space complexity: n^2
 
-fn four_sum(mut nums: Vec<i32>, target: i32) -> Vec<Vec<i32>> {
+fn four_sum(nums: Vec<i32>, target: i32) -> Vec<Vec<i32>> {
     if nums.len() < 4 {
         return vec![];
     }
@@ -44,7 +44,7 @@ fn four_sum(mut nums: Vec<i32>, target: i32) -> Vec<Vec<i32>> {
             // update 2sum cache
             cached_2sums
                 .entry(sum)
-                .or_insert_with(Vec::new)
+                .or_default()
                 .push((i, j));
         }
     }

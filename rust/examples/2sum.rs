@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
     let mut sorted_nums = nums.clone();
     sorted_nums.sort_unstable();
@@ -19,7 +17,7 @@ fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
     }
 
     // the problem says exactly 1 solution exists
-    return unreachable!();
+    unreachable!();
 }
 
 #[cfg(test)]

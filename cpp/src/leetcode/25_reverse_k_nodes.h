@@ -45,6 +45,7 @@ inline std::tuple<ListNode*, ListNode*> reverseK(ListNode* head, int k, bool und
 	ListNode* tail = head;
 	for (int i = 0; i < k - 1; i++) {
 		if (tail->next == nullptr) {
+			// there are <k elements, so we must reverse what we've already done
 			return undo 
 				? std::tuple<ListNode*, ListNode*>{head, tail} 
 				: reverseK(head, k, true);
