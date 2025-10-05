@@ -1,5 +1,4 @@
-use std::{collections::HashMap, hash::Hash}
-
+use std::{collections::HashMap, hash::Hash};
 
 struct DoubleLinkedListNode<T> {
     pub value: T,
@@ -37,7 +36,7 @@ impl<K: Eq + Hash, V> LRUCache<K, V> {
     pub fn get(&mut self, key: &K) -> Option<&V> {
         if let Some(&node) = self.map.get(key) {
             unsafe {
-                self.to_front(node);
+                self.move_to_front(node);
                 Some(&(*node).value)
             }
         } else {
@@ -49,7 +48,7 @@ impl<K: Eq + Hash, V> LRUCache<K, V> {
         if let Some(&node) = self.map.get(&key) {
             unsafe {
                 (*node).value = value;
-                self.to_front(node);
+                self.move_to_front(node);
             }
             return;
         }
@@ -59,7 +58,7 @@ impl<K: Eq + Hash, V> LRUCache<K, V> {
         }
         let node = DoubleLinkedListNode::new(value);
         self.map.insert(key, node);
-        unsafe { self.to_front(node); }
+        unsafe { self.move_to_front(node); }
         self.size += 1;
     }
 
@@ -82,7 +81,7 @@ impl<K: Eq + Hash, V> LRUCache<K, V> {
     }
 
     // TODO: handle nodes that are entirely new and not == mru
-    unsafe fn to_front(&mut self, node: *mut DoubleLinkedListNode<V>) {
+    unsafe fn move_to_front(&mut self, node: *mut DoubleLinkedListNode<V>) {
         debug_assert!(!node.is_null());
 
         unsafe {
